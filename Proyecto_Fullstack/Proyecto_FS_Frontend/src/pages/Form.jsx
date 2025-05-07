@@ -11,12 +11,26 @@ const Form = () => {
   const [firstName, setFirstName] = useState("");
   const [secondName, setSecondName] = useState("");
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Enviado");
-    setName("");
-    setFirstName("");
-    setSecondName("");
+    const data = { name, firstName, secondName };
+    try {
+      const response = await fetch('http://localhost:3000/users', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+      });
+  
+      const result = await response.json();
+      console.log(result);
+      setName("");
+      setFirstName("");
+      setSecondName("");
+    } catch (error) {
+      console.error('Error al enviar:', error);
+    }
   };
 
   const handleConsult = () => {

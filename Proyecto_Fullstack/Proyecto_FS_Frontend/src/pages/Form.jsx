@@ -1,8 +1,10 @@
 import { useState, useContext } from "react";
 import ConstantsContext from '../context/Context';
+import { useNavigate } from "react-router-dom";
 
 const Form = () => {
 
+  const navigate = useNavigate();
   const { contextName, contextFirstName, contextSecondName } = useContext(ConstantsContext);
 
   const [name, setName] = useState("");
@@ -17,10 +19,14 @@ const Form = () => {
     setSecondName("");
   };
 
+  const handleConsult = () => {
+    navigate("/consult");
+  };  
+
   return (
     <div className="container mt-5">
       <h2 className="mb-4">Formulario</h2>
-      <form>
+      <form onSubmit={handleSubmit}>
         <div className="row">
           <div className="col-sm-12">
             <label htmlFor="name" className="form-label">{contextName}</label>
@@ -35,10 +41,13 @@ const Form = () => {
             <input className="form-control input-size" type="text" placeholder="Ingresa apellido materno" value={secondName} onChange={(e) => setSecondName(e.target.value)} required/>
           </div>
           <div className="col-sm-12">
-            <button className="btn-primary btn button-login-size" type="submit" onClick={handleSubmit}>Enviar</button>
+            <button className="btn-primary btn button-login-size" type="submit">Enviar</button>
           </div>
         </div>
       </form>
+      <div className="col-sm-12">
+        <button className="btn-primary btn button-login-size" type="submit" onClick={handleConsult}>Consultar datos</button>
+      </div>
     </div>
   );
 };

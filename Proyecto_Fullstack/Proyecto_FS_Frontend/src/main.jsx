@@ -6,7 +6,7 @@ import "./css/styles.css";
 import ReactDOM from "react-dom/client"; 
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 //Components
-import { Home, Form } from "./pages";
+import { Home, Form, Consult } from "./pages";
 import { FrontLayout } from "./components";
 
 const router = createBrowserRouter(
@@ -22,6 +22,10 @@ const router = createBrowserRouter(
         {
           path: "/form",
           element: <Form />,
+        },
+        {
+          path: "/consult",
+          element: <Consult />,
         },
       ],
     },

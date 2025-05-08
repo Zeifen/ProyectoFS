@@ -1,69 +1,103 @@
-import { useState, useContext } from "react";
-import ConstantsContext from '../context/Context';
-import { useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from 'react';
 
-const Form = () => {
+const CrudPage = () => {
+  const [name, setName] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [secondName, setSecondName] = useState('');
+  const [users, setUsers] = useState([]);
+  const [editId, setEditId] = useState(null);
 
-  const navigate = useNavigate();
-  const { contextName, contextFirstName, contextSecondName } = useContext(ConstantsContext);
+  // Cargar usuarios al montar el componente
+  useEffect(() => {
+    fetchUsers();
+  }, []);
 
-  const [name, setName] = useState("");
-  const [firstName, setFirstName] = useState("");
-  const [secondName, setSecondName] = useState("");
+  const fetchUsers = async () => {
+    const res = await fetch('http://localhost:3000/users');
+    const data = await res.json();
+    setUsers(data);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const data = { name, firstName, secondName };
+    const userData = { name, firstName, secondName };
+
     try {
-      const response = await fetch('http://localhost:3000/users', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(data)
-      });
-  
-      const result = await response.json();
-      console.log(result);
-      setName("");
-      setFirstName("");
-      setSecondName("");
+      if (editId) {
+        await fetch(`http://localhost:3000/users/${editId}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(userData)
+        });
+        setEditId(null);
+      } else {
+        await fetch('http://localhost:3000/users', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(userData)
+        });
+        console.log("Usuario creado");
+      }
+      setName('');
+      setFirstName('');
+      setSecondName('');
+      fetchUsers();
     } catch (error) {
-      console.error('Error al enviar:', error);
+      console.error('Error:', error);
     }
   };
 
-  const handleConsult = () => {
-    navigate("/consult");
-  };  
+  const handleEdit = (user) => {
+    setName(user.name);
+    setFirstName(user.firstName);
+    setSecondName(user.secondName);
+    setEditId(user._id);
+  };
+
+  const handleDelete = async (id) => {
+    try {
+      await fetch(`http://localhost:3000/users/${id}`, {
+        method: 'DELETE'
+      });
+      fetchUsers();
+    } catch (error) {
+      console.error('Error al eliminar:', error);
+    }
+  };
 
   return (
     <div className="container mt-5">
-      <h2 className="mb-4">Formulario</h2>
-      <form onSubmit={handleSubmit}>
-        <div className="row">
-          <div className="col-sm-12">
-            <label htmlFor="name" className="form-label">{contextName}</label>
-            <input className="form-control input-size" type="text" placeholder="Ingresa nombre" value={name} onChange={(e) => setName(e.target.value)} required/>
-          </div>
-          <div className="col-sm-12">
-            <label htmlFor="firstName" className="form-label">{contextFirstName}</label>
-            <input className="form-control input-size" type="text" placeholder="Ingresa apellido paterno" value={firstName} onChange={(e) => setFirstName(e.target.value)} required/>
-          </div>
-          <div className="col-sm-12">
-            <label htmlFor="secondName" className="form-label">{contextSecondName}</label>
-            <input className="form-control input-size" type="text" placeholder="Ingresa apellido materno" value={secondName} onChange={(e) => setSecondName(e.target.value)} required/>
-          </div>
-          <div className="col-sm-12">
-            <button className="btn-primary btn button-login-size" type="submit">Enviar</button>
-          </div>
-        </div>
+      <h2 className="mb-4">Ejercicio CRUD</h2>
+
+      <form onSubmit={handleSubmit} className="mb-4">
+        <input type="text" placeholder="Nombre" value={name} onChange={(e) => setName(e.target.value)} required className="form-control mb-2" />
+        <input type="text" placeholder="Apellido Paterno" value={firstName} onChange={(e) => setFirstName(e.target.value)} required className="form-control mb-2" />
+        <input type="text" placeholder="Apellido Materno" value={secondName} onChange={(e) => setSecondName(e.target.value)} required className="form-control mb-2" />
+        <button className="btn btn-primary w-100" type="submit">
+          {editId ? 'Actualizar' : 'Enviar'}
+        </button>
       </form>
-      <div className="col-sm-12">
-        <button className="btn-primary btn button-login-size" type="submit" onClick={handleConsult}>Consultar datos</button>
-      </div>
+
+      <h3>Usuarios registrados</h3>
+      {users.length === 0 ? (
+        <p>No hay usuarios aún.</p>
+      ) : (
+        <ul className="list-group">
+          {users.map(user => (
+            <li key={user._id} className="list-group-item d-flex justify-content-between align-items-center">
+              <span>
+                {user.name} {user.firstName} {user.secondName}
+              </span>
+              <span>
+                <button className="btn btn-sm btn-warning me-2" onClick={() => handleEdit(user)}>Editar</button>
+                <button className="btn btn-sm btn-danger" onClick={() => handleDelete(user._id)}>Eliminar</button>
+              </span>
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 };
 
-export default Form;
+export default CrudPage;

@@ -16,7 +16,7 @@ const PORT = process.env.PORT || 3000; // process.env.PORT como se manda a llama
 
 mongoose.connect(process.env.MONGO_URI) //  Intenta conectarse a tu base de datos MongoDB
   .then(() => {
-    app.liste(PORT, () => {
+    app.listen(PORT, () => {
       console.log(`Servidor corriendo en puerto ${PORT}`); //Si se conecta correctamente a MongoDB, inicia el servidor en el puerto definido
     });
   })

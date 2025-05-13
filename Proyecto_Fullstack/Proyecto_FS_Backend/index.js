@@ -10,7 +10,7 @@ const app = express(); // Crea una nueva instancia de tu servidor Express
 
 app.use(cors());          // Middleware 1 Habilita que tu backend acepte peticiones desde otros dominios
 app.use(express.json());  // Middleware 2 Habilita Express para que pueda leer y entender el body en formato JSON, que es lo que se envía desde tu formulario
-app.use('/users', userRoutes); // Middleware 3 (rutas) Asocia el prefijo /users con las rutas que creaste en userRoutes.js (POST /users y GET /users)
+app.use('/users', userRoutes); // Middleware 3 (rutas) Asocia el prefijo /users con las rutas que creaste en userRoutes.js (http://localhost:3000/users)
 
 const PORT = process.env.PORT || 3000; // process.env.PORT como se manda a llamar la variable de entorno PORT
 
